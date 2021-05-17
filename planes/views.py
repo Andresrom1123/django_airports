@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -32,9 +36,9 @@ class PlaneViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'])
     def flights(self, request, pk=None):
         """
-        Devuelve los vuelos de un avión en específico
+        Devuelve los vuelos del dia de un avión en específico
         """
-        plane = Plane.objects.get(id=pk)
+        plane = get_object_or_404(Plane, Q(flights__date=datetime.today().date()) & Q(id=pk))
         flights = plane.flights.all()
         serialized = FlightSerializer(flights, many=True)
         return Response(status=status.HTTP_200_OK, data=serialized.data)

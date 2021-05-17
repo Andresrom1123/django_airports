@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -44,23 +45,24 @@ class AirportViewSet(viewsets.ModelViewSet):
 
         if request.method == 'POST':
             if (id_plane:= request.data.get("id_plane")) and (id_flight:= request.data.get("id_flight")):
+                plane = get_object_or_404(Plane, id=id_plane)
+                flight = get_object_or_404(Flight, id=id_flight)
+                plane_day = Plane.objects.filter(Q(flights__date=datetime.today().date()) & Q(id=id_plane))
                 airport_day = Airport.objects.filter(Q(flights__date=datetime.today().date()) & Q(id=pk))
-                plane = Plane.objects.get(id=id_plane)
-                flight = Flight.objects.get(id=id_flight)
 
                 if airport.city == flight.to:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={'Error': 'El vuelo no puede ir hacia el mismo aeropuerto'})
-                if len(plane.flights.all()) > 0 \
+                if len(plane.flights.all()) \
                         and not plane.flights.all()[len(plane.flights.all()) - 1].to == airport.city:
                     return Response(
                         status=status.HTTP_400_BAD_REQUEST, data={
                             'Error':
                             'Un vuelo solo puede ser generado con un avión cuyo último vuelo haya sido al Aeropuerto'})
-                if not len(airport_day.all()) <= 20:
+                if len(airport_day.all()) and not len(airport_day[0].flights.all()) <= 20:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={'Error', 'El aero puerto solo puede tener 20 vuelos por dia'})
-                if not len(plane.flights.all()) <= 5:
+                if len(plane_day.all()) and not len(plane_day[0].flights.all()) <= 5:
                     return Response(status=status.HTTP_400_BAD_REQUEST,
                                     data={'Error': 'El avion solo puede tener maximo 5 vuelos'})
 
@@ -75,8 +77,8 @@ class AirportViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_400_BAD_REQUEST,
                                 data={'id_plane': 'Es requerido', 'id_flight': 'Es requerido'})
         else:
-            airport_day = Airport.objects.filter(Q(flights__date=datetime.today().date()) & Q(id=pk))
-            flights = airport_day.all()
+            airport_day = get_object_or_404(Airport, Q(flights__date=datetime.today().date()) & Q(id=pk))
+            flights = airport_day.flights.all()
             serialized = FlightSerializer(flights, many=True)
             return Response(status=status.HTTP_200_OK, data=serialized.data)
 
@@ -85,7 +87,7 @@ class AirportViewSet(viewsets.ModelViewSet):
         """
         Devuelve los aviones de un aeropuerto en específico
         """
-        airport = Airport.objects.get(id=pk)
+        airport = get_object_or_404(Airport, id=pk)
         planes = airport.planes.all()
         serialized = PlaneSerializer(planes, many=True)
         return Response(status=status.HTTP_200_OK, data=serialized.data)
