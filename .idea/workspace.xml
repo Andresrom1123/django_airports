@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9889b497-51b2-44d7-a085-3af7be4fb9d1" name="Default Changelist" comment="" />
+    <list default="true" id="9889b497-51b2-44d7-a085-3af7be4fb9d1" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/django_airports/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/django_airports/settings.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
