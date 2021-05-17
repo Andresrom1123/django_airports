@@ -82,7 +82,7 @@ class AirportViewSet(viewsets.ModelViewSet):
             serialized = FlightSerializer(flights, many=True)
             return Response(status=status.HTTP_200_OK, data=serialized.data)
 
-    @action(detail=True, methods=['GET', 'POST'])
+    @action(detail=True, methods=['GET'])
     def planes(self, request, pk=None):
         """
         Devuelve los aviones de un aeropuerto en específico
