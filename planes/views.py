@@ -1,5 +1,8 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
+from flights.serializers import FlightSerializer
 from planes.models import Plane
 from planes.serializers import PlaneSerializer, PlaneCreateSerializer
 
@@ -25,3 +28,13 @@ class PlaneViewSet(viewsets.ModelViewSet):
             return PlaneCreateSerializer
         else:
             return PlaneSerializer
+
+    @action(detail=True, methods=['GET'])
+    def flights(self, request, pk=None):
+        """
+        Devuelve los vuelos de un avión en específico
+        """
+        plane = Plane.objects.get(id=pk)
+        flights = plane.flights.all()
+        serialized = FlightSerializer(flights, many=True)
+        return Response(status=status.HTTP_200_OK, data=serialized.data)

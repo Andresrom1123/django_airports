@@ -8,7 +8,7 @@ from planes.serializers import PlaneSerializer
 class AirportCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airport
-        fields = ['id', 'name', 'city']
+        fields = ['id', 'name', 'city', 'planes']
 
 
 class AirportSerializer(serializers.ModelSerializer):
