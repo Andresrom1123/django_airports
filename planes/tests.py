@@ -11,8 +11,8 @@ class TestPlaneViewSet(APITestCase):
         self.plane = Plane.objects.create(name='Avion 1')
         self.airport = Airport.objects.create(name='Aeropuerto 1', city='GDL')
         self.airport.planes.add(self.plane)
-        self.flight = Flight.objects.create(name='Vuelo', to='MTY', hour='06:00:00', date='2021-05-17')
-        self.plane.flights.add(self.flight)
+        self.flight = Flight.objects.create(name='Vuelo', to='MTY', hour='06:00:00',
+                                            date='2021-05-18', airports=self.airport, planes=self.plane)
 
     def test_action_flights(self):
         url = f'{self.url_base}planes/{self.airport.id}/flights/'
